@@ -6,9 +6,9 @@ import cookieParser from 'cookie-parser';
 import Redis from 'ioredis';
 import pino from 'pino';
 
-// Dynamic import Baileys
-const {
-    default: makeWASocket,
+const baileys = await import('@whiskeysockets/baileys');
+const makeWASocket = baileys.default;
+const {fetchLatestBaileysVersion,
     downloadContentFromMessage,
     emitGroupParticipantsUpdate,
     emitGroupUpdate,
@@ -79,8 +79,7 @@ const {
     templateMessage,
     InteractiveMessage,
     Header,
-} = await import('@whiskeysockets/baileys');
-
+} = baileys;
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
