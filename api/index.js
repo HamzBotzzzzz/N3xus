@@ -8,7 +8,7 @@ import pino from 'pino';
 
 const baileys = await import('@whiskeysockets/baileys');
 const makeWASocket = baileys.default;
-const {fetchLatestBaileysVersion,
+const {
     downloadContentFromMessage,
     emitGroupParticipantsUpdate,
     emitGroupUpdate,
