@@ -1,0 +1,499 @@
+/* ===== VARIABLES ===== */
+:root {
+  --black: #000000;
+  --white: #ffffff;
+  --gray-100: #f5f5f5;
+  --gray-200: #e0e0e0;
+  --gray-400: #999999;
+  --gray-700: #333333;
+  --gray-800: #1a1a1a;
+  --gray-900: #0d0d0d;
+  --danger: #ff2d2d;
+  --danger-hover: #cc0000;
+  --radius: 4px;
+  --font-mono: 'Space Mono', monospace;
+  --font-display: 'Syne', sans-serif;
+  --transition: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== RESET ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== BASE ===== */
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--black);
+  color: var(--white);
+  font-family: var(--font-mono);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ===== BACKGROUND GRID ===== */
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 40px 20px 60px;
+}
+
+/* ===== HEADER ===== */
+.header {
+  text-align: left;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--gray-800);
+}
+
+.header-tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--gray-400);
+  letter-spacing: 0.15em;
+  margin-bottom: 12px;
+  text-transform: none;
+}
+
+.header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 10vw, 4.2rem);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  text-transform: none;
+  animation: floatText 3.5s ease-in-out infinite;
+}
+
+/* Hanya berlaku untuk span di dalam h1 yang bukan bagian dari .wave */
+.header h1:not(.wave) span {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--white);
+  display: block;
+}
+
+@keyframes floatText {
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+/* ===== WAVE TEXT ===== */
+.wave {
+  display: block;
+  font-family: 'Poppins' , sans-serif;
+  font-size: clamp(2.8rem, 10vw, 4.2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  line-height: 1.2;          /* cukup untuk ruang gerak huruf */
+  margin: 0;
+}
+
+.word {
+  display: block;            /* masing-masing kata di baris sendiri */
+  margin-bottom: 12px;       /* jarak antara N3xus dan Attack */
+  white-space: normal;       /* biarkan wrap jika layar terlalu kecil */
+}
+
+/* Setiap huruf: inline-block agar berjejer horizontal */
+.word span {
+  display: inline-block;
+  animation: waveFloat 1.6s cubic-bezier(0.2, 0.9, 0.4, 1.1) infinite;
+  animation-delay: calc(var(--i) * 0.045s);
+  will-change: transform;
+}
+
+/* Baris pertama (N3xus) bergerak naik-turun */
+.up span {
+  animation-name: waveUp;
+}
+
+/* Baris kedua (ATTACK) bergerak kebalikan (opsional) */
+.down span {
+  animation-name: waveDown;
+}
+
+@keyframes waveUp {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-6px) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-4px) rotate(1deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes waveDown {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(6px) rotate(1deg);
+  }
+  50% {
+    transform: translateY(12px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(4px) rotate(-1deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+/* Responsif: perbesar jarak antar kata di layar kecil */
+@media (max-width: 480px) {
+  .word {
+    margin-bottom: 8px;
+  }
+  .wave {
+    font-size: clamp(2rem, 8vw, 3.2rem);
+  }
+}
+.logo {
+  display: block;
+  max-width: 64px;
+  margin-top: 20px;
+  opacity: 0.85;
+}
+
+/* ===== CARD ===== */
+.card {
+  background: var(--gray-900);
+  border: 1px solid var(--gray-800);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--white);
+  opacity: 0.06;
+}
+
+.card-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gray-800);
+}
+
+/* ===== STATUS ===== */
+#status {
+  font-size: 0.85rem;
+  color: var(--gray-200);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-height: 36px;
+}
+
+#status p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dot--idle { background: var(--gray-400); }
+.dot--on  { background: #00ff88; box-shadow: 0 0 6px #00ff88aa; animation: pulse-dot 1.8s infinite; }
+.dot--off  { background: var(--danger); }
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ===== FIELD GROUP ===== */
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ===== INPUTS ===== */
+input[type="text"] {
+  width: 100%;
+  background: var(--black);
+  border: 1px solid var(--gray-700);
+  color: var(--white);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  -webkit-appearance: none;
+}
+
+input[type="text"]::placeholder {
+  color: var(--gray-400);
+}
+
+input[type="text"]:focus {
+  border-color: var(--white);
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.08);
+}
+
+/* ===== SELECT ===== */
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+select {
+  width: 100%;
+  background: var(--black);
+  border: 1px solid var(--gray-700);
+  color: var(--white);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 12px 40px 12px 14px;
+  border-radius: var(--radius);
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color var(--transition);
+}
+
+select:focus {
+  border-color: var(--white);
+}
+
+select option {
+  background: var(--gray-900);
+  color: var(--white);
+}
+
+.select-arrow {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+  pointer-events: none;
+  font-size: 1rem;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn--primary {
+  background: var(--white);
+  color: var(--black);
+}
+
+.btn--primary:hover {
+  background: var(--gray-200);
+  transform: translateY(-1px);
+}
+
+.btn--primary:active {
+  transform: translateY(0);
+  background: var(--gray-100);
+}
+
+.btn--primary:disabled {
+  background: var(--gray-700);
+  color: var(--gray-400);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn--danger {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+}
+
+.btn--danger:hover {
+  background: var(--danger);
+  color: var(--white);
+  transform: translateY(-1px);
+}
+
+.btn--danger:active {
+  transform: translateY(0);
+}
+
+.btn--full {
+  width: 100%;
+}
+
+/* ===== BTN ROW ===== */
+.btn-row {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-row .btn {
+  flex: 1;
+}
+
+/* ===== PAIR CODE ===== */
+#pairCode {
+  margin-top: 12px;
+  font-size: 0.8rem;
+  color: var(--gray-200);
+  line-height: 1.6;
+  word-break: break-all;
+}
+
+#pairCode strong {
+  display: inline-block;
+  color: var(--white);
+  background: var(--gray-800);
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  margin: 4px 0;
+}
+
+#pairCode p[style*="red"] {
+  color: var(--danger) !important;
+}
+
+/* ===== QUICK RESET BTN (injected by JS) ===== */
+#quickResetBtn {
+  font-family: var(--font-mono) !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  padding: 7px 14px !important;
+  border-radius: var(--radius) !important;
+  border: 1px solid var(--danger) !important;
+  background: transparent !important;
+  color: var(--danger) !important;
+  cursor: pointer !important;
+  transition: all var(--transition) !important;
+  margin-top: 10px !important;
+  display: inline-block !important;
+  width: auto !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+#quickResetBtn:hover {
+  background: var(--danger) !important;
+  color: var(--white) !important;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  text-align: center;
+  font-size: 0.6rem;
+  color: var(--gray-700);
+  letter-spacing: 0.2em;
+  margin-top: 40px;
+  text-transform: uppercase;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 400px) {
+  .container {
+    padding: 28px 16px 48px;
+  }
+
+  .btn-row {
+    flex-direction: column;
+  }
+
+  .header h1 {
+    font-size: 2.6rem;
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+.card {
+  animation: fadeUp 0.4s ease both;
+}
+.card:nth-child(1) { animation-delay: 0.05s; }
+.card:nth-child(2) { animation-delay: 0.12s; }
+.card:nth-child(3) { animation-delay: 0.2s; }
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
