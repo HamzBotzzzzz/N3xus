@@ -5,10 +5,11 @@ import crypto from 'crypto';
 import cookieParser from 'cookie-parser';
 import Redis from 'ioredis';
 import pino from 'pino';
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
+
+// Dynamic import Baileys
 const {
     default: makeWASocket,
+    fetchLatestBaileysVersion,
     downloadContentFromMessage,
     emitGroupParticipantsUpdate,
     emitGroupUpdate,
@@ -79,7 +80,7 @@ const {
     templateMessage,
     InteractiveMessage,
     Header,
-} = require('@whiskeysockets/baileys');
+} = await import('@whiskeysockets/baileys');
 
 const app = express();
 app.use(express.json());
