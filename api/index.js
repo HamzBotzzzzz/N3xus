@@ -5,6 +5,8 @@ import crypto from 'crypto';
 import cookieParser from 'cookie-parser';
 import Redis from 'ioredis';
 import pino from 'pino';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const {
     default: makeWASocket,
     downloadContentFromMessage,
