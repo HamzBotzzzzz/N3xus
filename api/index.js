@@ -5,10 +5,13 @@ import crypto from 'crypto';
 import cookieParser from 'cookie-parser';
 import Redis from 'ioredis';
 import pino from 'pino';
-import makeWASocket, {
+import Baileys from '@whiskeysockets/baileys';
+
+const {
+    default: makeWASocket,
     fetchLatestBaileysVersion,
     initAuthCreds,
-} from '@whiskeysockets/baileys';
+} = Baileys;
 
 const app = express();
 app.use(express.json());
