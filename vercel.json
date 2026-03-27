@@ -4,8 +4,5 @@
     "api/index.js": {
       "maxDuration": 60
     }
-  },
-  "env": {
-    "REDIS_URL": "@redis_url"
   }
 }
