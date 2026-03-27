@@ -9,7 +9,6 @@ import pino from 'pino';
 // Dynamic import Baileys
 const {
     default: makeWASocket,
-    fetchLatestBaileysVersion,
     downloadContentFromMessage,
     emitGroupParticipantsUpdate,
     emitGroupUpdate,
