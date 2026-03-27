@@ -89,7 +89,7 @@ const redis = new Redis({
   host: process.env.REDIS_HOST,
   port: parseInt(process.env.REDIS_PORT) || 6379,
   password: process.env.REDIS_PASSWORD,
-  tls: process.env.REDIS_TLS === 'true' ? {} : undefined,
+  tls: {}, // selalu aktif untuk Upstash
   retryStrategy: (times) => Math.min(times * 50, 2000)
 });
 redis.on('error', (err) => console.error('Redis error:', err));
@@ -476,12 +476,6 @@ app.post('/api/send', async (req, res) => {
     console.error(`Send error for session ${sessionId}:`, err);
     res.status(500).json({ success: false, message: err.message });
   }
-});
-
-// ==================== START SERVER ====================
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
 });
 
 module.exports = app;
